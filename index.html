@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <!-- 핀치 줌 허용(user-scalable=yes), iOS 노치 대응 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b3d91" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+  <title>시료확인스캐너</title>
+
+  <!-- PWA / iOS -->
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="시료스캐너" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ===== 상단 헤더 ===== -->
+  <header class="app-header">
+    <div class="header-row">
+      <h1 class="app-title">시료확인스캐너</h1>
+      <div class="dataset-area">
+        <select id="datasetSelect" class="dataset-select" aria-label="날짜별 데이터셋 선택"></select>
+      </div>
+    </div>
+    <div class="meta-line" id="metaLine"></div>
+  </header>
+
+  <!-- ===== 탭 버튼 ===== -->
+  <nav class="tabs" role="tablist">
+    <button class="tab-btn active" id="tabScanBtn" role="tab" aria-selected="true" data-tab="scan">📷 QR 스캔</button>
+    <button class="tab-btn" id="tabListBtn" role="tab" aria-selected="false" data-tab="list">📋 시료 리스트</button>
+  </nav>
+
+  <!-- ===== QR 스캔 탭 ===== -->
+  <section class="tab-panel active" id="panelScan" role="tabpanel">
+    <div class="scan-wrap">
+      <div id="qrReader" class="qr-reader"></div>
+      <div class="scan-controls">
+        <button id="scanStartBtn" class="btn btn-primary big">스캔 시작</button>
+        <button id="scanStopBtn" class="btn btn-secondary big" hidden>스캔 정지</button>
+      </div>
+
+      <!-- 스캔 결과 상태창 -->
+      <div id="scanStatus" class="scan-status status-idle">
+        <div class="scan-status-title">대기 중</div>
+        <div class="scan-status-detail">엑셀을 업로드하고 스캔을 시작하세요.</div>
+      </div>
+
+      <!-- 수동 검색 fallback -->
+      <div class="manual-box">
+        <label for="manualInput" class="manual-label">라벨 훼손 시 수동 조회 (9자리)</label>
+        <div class="manual-row">
+          <input id="manualInput" class="manual-input" type="text" inputmode="numeric"
+                 pattern="\d*" maxlength="9" placeholder="예: 260112227" />
+          <button id="manualBtn" class="btn btn-primary">조회</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 시료 리스트 탭 ===== -->
+  <section class="tab-panel" id="panelList" role="tabpanel">
+    <div class="list-toolbar">
+      <label class="btn btn-primary file-btn">
+        엑셀 업로드
+        <input id="fileInput" type="file" accept=".xlsx,.xls" hidden />
+      </label>
+      <button id="exportBtn" class="btn btn-secondary" disabled>엑셀 내보내기</button>
+      <div class="zoom-controls" role="group" aria-label="확대 축소">
+        <button id="zoomOutBtn" class="btn btn-zoom" aria-label="축소">－</button>
+        <span id="zoomLabel" class="zoom-label">100%</span>
+        <button id="zoomInBtn" class="btn btn-zoom" aria-label="확대">＋</button>
+      </div>
+      <div class="progress-pill" id="progressPill" hidden></div>
+    </div>
+
+    <div class="list-toolbar second">
+      <input id="listSearch" class="list-search" type="text" inputmode="numeric"
+             placeholder="🔍 시료번호 검색 후 자동 이동·체크" />
+      <label class="filter-toggle">
+        <input type="checkbox" id="hideCheckedToggle" /> 확인된 항목 숨기기
+      </label>
+    </div>
+
+    <div class="table-scroll" id="tableScroll">
+      <table class="sample-table" id="sampleTable">
+        <thead id="sampleThead"></thead>
+        <tbody id="sampleTbody"></tbody>
+      </table>
+      <div class="empty-state" id="emptyState">
+        <p>업로드된 데이터가 없습니다.</p>
+        <p class="hint">「엑셀 업로드」 버튼으로 시료관리대장(.xlsx)을 불러오세요.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 토스트/팝업 ===== -->
+  <div id="toast" class="toast" hidden></div>
+
+  <!-- 라이브러리 (로컬 vendoring · 오프라인) -->
+  <script src="lib/xlsx.full.min.js"></script>
+  <script src="lib/html5-qrcode.min.js"></script>
+  <script src="db.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+# 내부 문서 / 예시 데이터 (실제 업체명 포함 — 공개 저장소에서 제외)
+prd.md
+*.xlsx
+
+# 임시/테스트 산출물
+_*.py
+_*.png
+_export*.xlsx
+
+# OS / 에디터
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
